@@ -3,6 +3,7 @@ package com.wildcodeschool.library.controller;
 
 import com.wildcodeschool.library.entity.Book;
 import com.wildcodeschool.library.repository.BookRepository;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,20 +14,25 @@ import java.util.Map;
 public class BookController {
 
     @Autowired
-    private BookRepository bookRepository;
+    BookRepository bookRepository;
 
     @GetMapping("/books")
     public List<Book> getBooks() {
         return bookRepository.findAll();
     }
 
+    @GetMapping("/books/{id}")
+    public Book getBook(@PathVariable Integer id) {
+        return bookRepository.findById(id).get();
+    }
+
     @PostMapping("/books")
     public Book create(@RequestBody Book book) { return bookRepository.save(book); }
 
     @PostMapping("/books/search")
-    public Book search(@RequestBody Map<String, String> body) {
+    public List<Book> search(@RequestBody Map<String, String> body) {
         String searchTerm = body.get("text");
-        return bookRepository.findByTitleContainingOrContentContaining(searchTerm, searchTerm);
+        return bookRepository.findByTitleContainingOrDescriptionContaining(searchTerm, searchTerm);
     }
 
     @PutMapping("/books/{id}")
